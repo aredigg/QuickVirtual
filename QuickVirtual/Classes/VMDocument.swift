@@ -70,10 +70,12 @@ final class VMDocument: NSDocument {
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered, defer: false)
         window.isRestorable = false
-        window.contentView = NSHostingView(rootView: DocumentView(controller: controller))
+        let windowState = WindowState()
+        window.contentView = NSHostingView(
+            rootView: DocumentView(controller: controller, windowState: windowState))
         window.center()
-        let controller = VMWindowController(window: window)
-        window.delegate = controller
-        addWindowController(controller)
-    }
+        let windowController = VMWindowController(
+            window: window, windowState: windowState)
+        window.delegate = windowController
+        addWindowController(windowController)    }
 }

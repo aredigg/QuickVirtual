@@ -13,29 +13,43 @@ import Virtualization
 struct DocumentView: View {
     @Bindable var controller: VMController
     
+    let windowState: WindowState
+    
+    /// In fullscreen, show the bar only while there is a notice to read.
+    private var showsStatusBar: Bool {
+        !windowState.isFullScreen
+        || !controller.isActive
+        || controller.shutdownPhase != nil
+        || controller.notice != nil
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             VMDisplay(vm: controller.vm)
                 .frame(minWidth: 640, minHeight: 400)
             
-            HStack {
-                if let phase = controller.shutdownPhase {
-                    ProgressView().controlSize(.small)
-                    Text(phase.message).font(.callout)
-                } else if let notice = controller.notice {
-                    Text(notice).font(.callout).foregroundStyle(.secondary)
-                }
-                Spacer()
-                if controller.showsSecureBootEscape {
-                    Button("Retry without Secure Boot") {
-                        controller.turnOffSecureBoot()
-                        installAction()
+            if showsStatusBar {
+                HStack {
+                    if let phase = controller.shutdownPhase {
+                        ProgressView().controlSize(.small)
+                        Text(phase.message).font(.callout)
+                    } else if let notice = controller.notice {
+                        Text(notice).font(.callout).foregroundStyle(.secondary)
                     }
+                    Spacer()
+                    if controller.showsSecureBootEscape {
+                        Button("Retry without Secure Boot") {
+                            controller.turnOffSecureBoot()
+                            installAction()
+                        }
+                    }
+                    primaryButton
                 }
-                primaryButton
+                .padding(8)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .padding(8)
         }
+        .animation(.default, value: showsStatusBar)
         .alert(
             "Virtual Machine Error",
             isPresented: Binding(

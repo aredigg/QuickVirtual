@@ -8,6 +8,26 @@
 import AppKit
 
 final class VMWindowController: NSWindowController, NSWindowDelegate {
+    private let windowState: WindowState
+    
+    init(window: NSWindow, windowState: WindowState) {
+        self.windowState = windowState
+        super.init(window: window)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError("init(coder:) is unavailable") }
+    
+    // "will" rather than "did", so the bar animates out with the transition.
+    func windowWillEnterFullScreen(_ notification: Notification) {
+        windowState.isFullScreen = true
+    }
+    
+    func windowWillExitFullScreen(_ notification: Notification) {
+        windowState.isFullScreen = false
+    }
+    
+    
     func windowShouldClose(_ sender: NSWindow) -> Bool {
         guard let document = document as? VMDocument,
               document.controller.isActive

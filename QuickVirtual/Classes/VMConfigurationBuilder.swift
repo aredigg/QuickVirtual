@@ -80,6 +80,23 @@ enum VMConfigurationBuilder {
             VZVirtioTraditionalMemoryBalloonDeviceConfiguration()
         ]
         
+        // 8a. Audio output to the host's default output device.
+        let output = VZVirtioSoundDeviceOutputStreamConfiguration()
+        output.sink = VZHostAudioOutputStreamSink()
+        let sound = VZVirtioSoundDeviceConfiguration()
+        sound.streams = [output]
+        config.audioDevices = [sound]
+        
+        // 8b. Clipboard sharing via SPICE agent (guest needs spice-vdagent).
+        let spiceAgent = VZSpiceAgentPortAttachment()
+        spiceAgent.sharesClipboard = true
+        let spicePort = VZVirtioConsolePortConfiguration()
+        spicePort.name = VZSpiceAgentPortAttachment.spiceAgentPortName
+        spicePort.attachment = spiceAgent
+        let console = VZVirtioConsoleDeviceConfiguration()
+        console.ports[0] = spicePort
+        config.consoleDevices = [console]
+        
         // 9. Validate.
         try config.validate()
         return config
