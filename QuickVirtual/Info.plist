@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<key>UTExportedTypeDeclarations</key>
+<array>
+  <dict>
+    <key>UTTypeIdentifier</key>
+    <string>com.example.quickvirtual.vm</string>
+    <key>UTTypeDescription</key>
+    <string>QuickVirtual Machine</string>
+    <key>UTTypeConformsTo</key>
+    <array>
+      <string>com.apple.package</string>
+      <string>public.data</string>
+    </array>
+    <key>UTTypeTagSpecification</key>
+    <dict>
+      <key>public.filename-extension</key>
+      <array><string>quickvm</string></array>
+    </dict>
+  </dict>
+</array>
+<key>CFBundleDocumentTypes</key>
+<array>
+  <dict>
+    <key>CFBundleTypeName</key>
+    <string>QuickVirtual Machine</string>
+    <key>CFBundleTypeRole</key>
+    <string>Editor</string>
+    <key>LSHandlerRank</key>
+    <string>Owner</string>
+    <key>LSTypeIsPackage</key>
+    <true/>
+    <key>LSItemContentTypes</key>
+    <array><string>com.example.quickvirtual.vm</string></array>
+    <key>NSDocumentClass</key>
+    <string>$(PRODUCT_MODULE_NAME).VMDocument</string>
+  </dict>
+</array></dict>
+</plist>
