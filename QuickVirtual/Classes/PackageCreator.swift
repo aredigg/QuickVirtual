@@ -25,7 +25,7 @@ nonisolated enum PackageCreator {
     }
     
     static let bytesPerGiB: Int64 = 1 << 30
-    static let blockSize = 512
+    static let blockSize: DiskImage.BlockSize = .bytes512
     
     /// Checks the destination volume can hold the full disk capacity.
     /// (ASIF is sparse, but the guest may fill it.)
@@ -57,7 +57,7 @@ nonisolated enum PackageCreator {
             _ = try DiskImage(
                 creating: .asif(
                     url: layout.disk,
-                    blockCount: Int(bytes / Int64(blockSize)),
+                    blockCount: Int(bytes / Int64(blockSize.rawValue)),
                     blockSize: blockSize))
             
             // 2. Machine identifier.

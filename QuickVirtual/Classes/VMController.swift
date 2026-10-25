@@ -26,6 +26,11 @@ final class VMController: NSObject {
         }
     }
     
+    /// §8a: stops faster than this with Secure Boot on are treated as SB
+    /// failures.
+    static let earlyStopWindow: Duration = .seconds(20)
+    static let shutdownTimeout: Duration = .seconds(30)
+    
     private(set) var state: State
     private(set) var vm: VZVirtualMachine?
     private(set) var notice: String?
@@ -40,8 +45,6 @@ final class VMController: NSObject {
     @ObservationIgnored private var isClosed = false
     @ObservationIgnored private var stopWaiter: CheckedContinuation<Bool, Never>?
     @ObservationIgnored private var stopTimeoutTask: Task<Void, Never>?
-    
-    static let shutdownTimeout: Duration = .seconds(30)
     
     var isActive: Bool { vm != nil }
     

@@ -20,26 +20,38 @@ final class VMDocument: NSDocument {
         }
     }
     
+    private(set) var config: VMConfig?
     private(set) lazy var controller = VMController(document: self)
     
     /// Derived from fileURL so it follows moves/renames while open.
     var layout: PackageLayout? { fileURL.map(PackageLayout.init(root:)) }
     
     // Never save, autosave, or version anything; the VM owns the contents.
-    override class var autosavesInPlace: Bool { false }
+    nonisolated override class var autosavesInPlace: Bool { false }
     override class var autosavesDrafts: Bool { false }
     override class var preservesVersions: Bool { false }
     
-    override func read(from url: URL, ofType typeName: String) throws {
+    /// Reads happen on the main thread; read(from:) relies on this.
+    nonisolated override class func canConcurrentlyReadDocuments(
+        ofType typeName: String
+    ) -> Bool {
+        false
+    }
+    
+    nonisolated override func read(from url: URL, ofType typeName: String)
+    throws
+    {
         let layout = PackageLayout(root: url)
-        let required = [layout.disk, layout.efiVars, layout.machineID, layout.config]
+        let required = [
+            layout.disk, layout.efiVars, layout.machineID, layout.config,
+        ]
         for file in required
                 where !FileManager.default.fileExists(atPath: file.path) {
             throw Error.incompletePackage(missing: file.lastPathComponent)
         }
-        config = try ConfigStore.decode(Data(contentsOf: layout.config))
+        let decoded = try ConfigStore.decode(Data(contentsOf: layout.config))
+        MainActor.assumeIsolated { self.config = decoded }
     }
-    
     override func data(ofType typeName: String) throws -> Data {
         throw CocoaError(.featureUnsupported)
     }
